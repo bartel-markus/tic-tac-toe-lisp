@@ -58,7 +58,7 @@
 (defun play-game ()
   (loop
     (print-board)
-    (format t "Player ~A, please enter the row and column (e.g. 0 0): " *player*)
+    (format t "Player ~A, please enter the row and column (e.g. 1 1): " *player*)
     (let ((row (read)) (column (read)))
       (if (string= " " (aref-one-indexed *board* row column))
           (progn
