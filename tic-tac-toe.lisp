@@ -19,20 +19,16 @@
     ((0 0) (1 1) (2 2))                 ;indices of diagonals
     ((0 2) (1 1) (2 0))))
 
+(defun listify-2D-array (arr)
+  (destructuring-bind (n m) (array-dimensions arr)
+    (loop for i below n collect
+                        (loop for j below m collect
+                                            (aref arr i j)))))
+
 ;;; Define a function to print the board
 (defun print-board ()
-  (princ "┌───┬───┬───┐")
-  (terpri)
-  (dotimes (i 3)
-    (princ "│ ")
-    (dotimes (j 3)
-      (princ (aref *board* i j))
-      (princ (if (= j 2) " │" " │ ")))
-    (terpri)
-    (if (= i 2)
-        (princ "└───┴───┴───┘")
-        (princ "├───┼───┼───┤"))
-    (terpri)))
+  (format t "┌───┬───┬───┐~%~{│ ~{~a~^ │ ~} │~%~^├───┼───┼───┤~%~}└───┴───┴───┘~%"
+          (listify-2D-array *board*)))
 
 ;;; Define a function to change the player's turn
 (defun change-player ()
