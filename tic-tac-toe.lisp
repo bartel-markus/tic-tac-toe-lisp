@@ -8,16 +8,23 @@
 ;;; Define the player's symbol
 (defparameter *player* "X")
 
-;; Define winning arrangements of indices with same symbol
+;;; Define winning arrangements of indices with same symbol
 (defparameter *winning-constellations*
-  `(((0 0) (0 1) (0 2))                 ;indices of rows
-    ((1 0) (1 1) (1 2))
-    ((2 0) (2 1) (2 2))
-    ((0 0) (1 0) (2 0))                 ;indices of columns
-    ((0 1) (1 1) (2 1))
-    ((0 2) (1 2) (2 2))
-    ((0 0) (1 1) (2 2))                 ;indices of diagonals
-    ((0 2) (1 1) (2 0))))
+  `(((1 1) (1 2) (1 3))                 ;indices of rows
+    ((2 1) (2 2) (2 3))
+    ((3 1) (3 2) (3 3))
+    ((1 1) (2 1) (3 1))                 ;indices of columns
+    ((1 2) (2 2) (3 2))
+    ((1 3) (2 3) (3 3))
+    ((1 1) (2 2) (3 3))                 ;indices of diagonals
+    ((1 3) (2 2) (3 1))))
+
+(defun aref-one-indexed (arr &rest subscripts)
+  (apply #'aref arr (mapcar #'1- subscripts)))
+
+(defun (setf aref-one-indexed) (new-value arr &rest subscripts)
+  (setf (apply #'aref arr (mapcar #'1- subscripts)) new-value)
+  new-value)
 
 (defun listify-2D-array (arr)
   (destructuring-bind (n m) (array-dimensions arr)
@@ -39,7 +46,7 @@
 
 (defun sequence-of-winning-fields-p (indices)
   (let ((field-content-lst (mapcar #'(lambda (ind)
-                                       (aref *board* (car ind) (cadr ind)))
+                                       (aref-one-indexed *board* (car ind) (cadr ind)))
                                    indices)))
     (and (not (member " " field-content-lst))
          (all-equal-strings-p field-content-lst))))
@@ -53,11 +60,12 @@
     (print-board)
     (format t "Player ~A, please enter the row and column (e.g. 0 0): " *player*)
     (let ((row (read)) (column (read)))
-      (if (string= " " (aref *board* row column))
+      (if (string= " " (aref-one-indexed *board* row column))
           (progn
-            (setf (aref *board* row column) *player*)
+            (setf (aref-one-indexed *board* row column) *player*)
             (when (game-over)
               (print-board)
+              (setf *board* (make-array (list 3 3) :initial-element " "))
               (return (format t "Player ~A wins!~%" *player*)))
             (change-player))
           (format t "The field is already occupied! Try again, Player ~A!~%" *player*)))))
