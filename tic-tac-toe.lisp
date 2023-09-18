@@ -57,8 +57,10 @@
 ;;; Define a function to handle the game loop
 (defun play-game ()
   (loop
-    (print-board)
+    (terpri)
     (format t "Player ~A, please enter the row and column (e.g. 1 1): " *player*)
+    (terpri)
+    (print-board)
     (let ((row (read)) (column (read)))
       (if (string= " " (aref-one-indexed *board* row column))
           (progn
